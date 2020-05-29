@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>738627502837-40c0s7v0rvsuk2nmfg5s52uh2ki4kolq.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.738627502837-40c0s7v0rvsuk2nmfg5s52uh2ki4kolq</string>
+	<key>API_KEY</key>
+	<string>AIzaSyA5gwIjQll7jyJqZKuLes1xXYiYXLTr_eQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>738627502837</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>alamin.tinder</string>
+	<key>PROJECT_ID</key>
+	<string>tinderkavsoft</string>
+	<key>STORAGE_BUCKET</key>
+	<string>tinderkavsoft.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:738627502837:ios:61aaf929805f8f76df3bbc</string>
+	<key>DATABASE_URL</key>
+	<string>https://tinderkavsoft.firebaseio.com</string>
+</dict>
+</plist>
