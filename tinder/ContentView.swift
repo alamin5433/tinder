@@ -11,18 +11,14 @@ import Firebase
 import SDWebImageSwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var obs: observer
+   
     var body: some View {
         ZStack {
-            Color("LightWhite").edgesIgnoringSafeArea(.all)
-            if obs.users.isEmpty {
-                Loader()
-            }
-            
+            Loader()
             VStack {
-                TopView()
-                SwipView()
-                BottomView()
+                    TopView()
+                    SwipeView()
+                    BottomView()
             }
         }
     }
@@ -67,7 +63,9 @@ struct TopView: View {
 struct BottomView: View {
     var body: some View {
         HStack(spacing: 10){
-            Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/) {
+            Button(action: {
+                
+            }) {
                 Image("reload")
                     .resizable()
                     .frame(width: 25, height: 25)
@@ -131,33 +129,40 @@ struct BottomView: View {
     }
 }
 
-struct SwipView : View {
-    @EnvironmentObject var obser:observer
-    var body: some View {
-        GeometryReader { geo in
-            ZStack {
+struct SwipeView : View {
+    @EnvironmentObject var obser : observer
+    var body: some View{
+        GeometryReader{ geo in
+            ZStack{
                 ForEach(self.obser.users){ i in
+                    //Image(i.image)
+//                    AnimatedImage(url: URL(string: i.image))
+//                    .resizable()
+//                        .frame(height: geo.size.height - 100)
+//                    .cornerRadius(20)
                     
-                    SwipeDetailView(name: i.name, age: i.age, image: i.image, height: geo.size.height - 100).gesture(DragGesture()
-                        .onChanged({ (value) in
-                            if value.translation.width > 0 {
-                                self.obser.update(id: i, value: value.translation.width, degree: 8)
+                    SwipeDetailView(name: i.name, age: i.age, image: i.image).frame(height: geo.size.height - 100)
+                    .gesture(DragGesture()
+                        .onChanged({ (Value) in
+                            if Value.translation.width > 0{
+                                self.obser.update(ob: i, value: Value.translation.width, degree: 8)
                             }else{
-                                self.obser.update(id: i, value: value.translation.width, degree: -8)
+                                self.obser.update(ob: i, value: Value.translation.width, degree: -8)
                             }
+                            
                         })
-                        .onEnded({ (values) in
-                            if i.swipe > 0{
+                        .onEnded({ (value) in
+                            if i.swipe > 0 {
                                 if i.swipe > geo.size.width / 2 - 80 {
-                                    self.obser.update(id: i, value: 500, degree: 0)
+                                    self.obser.update(ob: i, value: 500, degree: 8)
                                 }else{
-                                     self.obser.update(id: i, value: 0, degree: 0)
+                                    self.obser.update(ob: i, value: 0, degree: 0)
                                 }
                             }else{
                                 if -i.swipe > geo.size.width / 2 - 80 {
-                                    self.obser.update(id: i, value: -500, degree: 0)
+                                    self.obser.update(ob: i, value: -500, degree: -8)
                                 }else{
-                                     self.obser.update(id: i, value: 0, degree: 0)
+                                    self.obser.update(ob: i, value: 0, degree: 0)
                                 }
                             }
                         })
@@ -165,45 +170,75 @@ struct SwipView : View {
                         .offset(x: i.swipe)
                         .rotationEffect(.init(degrees: i.degree))
                         .animation(.spring())
-                    
                 }
             }
-            .padding(.horizontal)
+            .padding(.horizontal, 15)
         }
     }
 }
 
-class observer : ObservableObject {
-   @Published var users = [datatype]()
-   
+struct SwipeDetailView: View {
+    var name = ""
+    var age = ""
+    var image = ""
+    //var height:CGFloat = 0
+    var body: some View{
+        ZStack{
+            AnimatedImage(url: URL(string: image))
+            .resizable()
+               // .frame(height: geo.size.height - 100)
+            .cornerRadius(20)
+            VStack(alignment:.leading){
+                Text(name).fontWeight(.heavy).font(.system(size: 20)).foregroundColor(.white)
+                Text(age)
+            }
+        }
+    }
+}
+
+class observer: ObservableObject {
+    @Published var users = [datatype]()
     init() {
         let db = Firestore.firestore()
         db.collection("users").getDocuments { (snap, err) in
-            if err != nil {
-                print(err?.localizedDescription ?? "error")
+            if err != nil{
+                print((err?.localizedDescription)!)
                 return
             }
             for i in snap!.documents{
                 let name = i.get("name") as! String
                 let age = i.get("age") as! String
                 let image = i.get("image") as! String
-               // self.id += 1
                 let id = i.documentID
                 self.users.append(datatype(id: id, name: name, image: image, age: age, swipe: 0, degree: 0))
-                //self.users.append(datatype(id: self.id, name: name))
             }
         }
     }
     
-    func update(id: datatype, value: CGFloat, degree: Double) {
+    func update(ob: datatype , value: CGFloat, degree: Double) {
         for i in 0..<self.users.count {
-            if self.users[i].id == id.id {
+            if self.users[i].id == ob.id {
                 self.users[i].swipe = value
                 self.users[i].degree = degree
             }
         }
     }
 }
+
+struct Loader: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIActivityIndicatorView{
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.startAnimating()
+        return indicator
+    }
+    func updateUIView(_ uiView: UIActivityIndicatorView, context: Context) {
+        
+    }
+}
+
+
+
+
 
 struct datatype : Identifiable {
     var id: String
@@ -215,41 +250,6 @@ struct datatype : Identifiable {
 }
 
 
-struct Loader : UIViewRepresentable {
-   
-    
-    func makeUIView(context: Context) -> UIActivityIndicatorView {
-        let indicator = UIActivityIndicatorView(style: .large)
-        indicator.startAnimating()
-        return indicator
-    }
-    func updateUIView(_ uiView: UIActivityIndicatorView, context: Context) {
-        
-    }
-}
 
-struct SwipeDetailView : View {
-    var name = ""
-    var age = ""
-    var image = ""
-    var height: CGFloat = 0
-    var body: some View {
-        
-        
-        ZStack(alignment: .bottomLeading) {
-            AnimatedImage(url: URL(string: image)!)
-                .resizable()
-                .frame(height: height)
-                .cornerRadius(20)
-            VStack(alignment: .leading, spacing: 10) {
-                Text(name)
-                    .fontWeight(.heavy)
-                    .font(.system(size: 25))
-                    .foregroundColor(.white)
-                Text(age)
-                .foregroundColor(.white)
-            }
-            .padding([.leading, .bottom],30)
-        }
-    }
-}
+
+
